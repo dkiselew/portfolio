@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OneLinePlayer — Dmitry Kiselev</title>
+  <meta name="description" content="OneLinePlayer: an embeddable web video/audio player with no installation. Concept, UI, and code — solo." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="./site.js"></script>
+  <link rel="stylesheet" href="./site.css" />
+</head>
+<body class="font-sans antialiased bg-white text-ink">
+  <main class="px-6 sm:px-10 lg:px-16 pt-14 pb-24 lg:pt-20">
+    <div class="max-w-[1100px] mx-auto">
+      <a href="./index.html" data-back class="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-ink transition-colors">
+        <span aria-hidden="true">←</span> Back
+      </a>
+
+      <p class="mt-10 text-xs uppercase tracking-[0.18em] text-neutral-400">Personal project · Open-Source</p>
+      <h1 class="mt-4 text-4xl sm:text-6xl font-extrabold tracking-tight">OneLinePlayer</h1>
+      <p class="mt-6 text-lg text-neutral-500 max-w-2xl leading-relaxed">
+        An embeddable web video/audio player that needs no installation. The product is the restraint: one line of embed code, a player that stays out of the way.
+      </p>
+
+      <dl class="mt-10 grid sm:grid-cols-3 gap-6 text-sm">
+        <div>
+          <dt class="text-neutral-400">Role</dt>
+          <dd class="mt-1 font-medium">Concept, UI, code, deploy</dd>
+        </div>
+        <div>
+          <dt class="text-neutral-400">Stack</dt>
+          <dd class="mt-1 font-medium">Vanilla JS · Grunt · Cloudflare</dd>
+        </div>
+        <div>
+          <dt class="text-neutral-400">Live</dt>
+          <dd class="mt-1 font-medium">
+            <a href="https://onelineplayer.com" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">onelineplayer.com</a>
+          </dd>
+        </div>
+      </dl>
+
+      <figure class="mt-14 bg-wash rounded-[28px] p-3 sm:p-5 overflow-hidden">
+        <video
+          class="w-full rounded-2xl bg-black"
+          autoplay
+          muted
+          loop
+          playsinline
+          controls
+          poster="./works/onelineplayer/onelineplayer-original.png"
+        >
+          <source src="./works/onelineplayer/OneLinePlayer-Demo.mp4" type="video/mp4" />
+        </video>
+        <figcaption class="sr-only">OneLinePlayer demo</figcaption>
+      </figure>
+
+      <figure class="mt-5 bg-wash rounded-[28px] p-3 sm:p-5 overflow-hidden">
+        <img
+          src="./works/onelineplayer/onelineplayer-original.png"
+          alt="Configurator: preview on the left, playback toggles and control checkboxes on the right, embed code below"
+          class="w-full rounded-2xl"
+        />
+      </figure>
+
+      <div class="mt-16 grid lg:grid-cols-2 gap-12 lg:gap-20">
+        <div>
+          <h2 class="text-2xl font-extrabold tracking-tight">Why it looks this way</h2>
+          <p class="mt-4 text-neutral-500 leading-relaxed">
+            The marketing page is the product. You configure the player, copy one iframe, and leave. Nothing competes with that loop.
+          </p>
+        </div>
+        <ol class="space-y-8">
+          <li>
+            <p class="font-semibold">Preview is the hero</p>
+            <p class="mt-2 text-sm text-neutral-500 leading-relaxed">The player sits large on the left so you judge the actual embed, not a mock. The swimming still is content, not chrome.</p>
+          </li>
+          <li>
+            <p class="font-semibold">Controls as a kit, not a settings dump</p>
+            <p class="mt-2 text-sm text-neutral-500 leading-relaxed">Toggles for loop, mute, autoplay sit as a visual strip. Checkboxes below map 1:1 to what the embed will show. You see the surface you are about to ship.</p>
+          </li>
+          <li>
+            <p class="font-semibold">One action</p>
+            <p class="mt-2 text-sm text-neutral-500 leading-relaxed">Embed code and a Copy button. No account, no install, no extra page. Vanilla JS and Cloudflare keep the surface as small as the idea.</p>
+          </li>
+        </ol>
+      </div>
+
+      <div class="mt-20 flex items-center justify-between border-t border-neutral-200 pt-8">
+        <a href="./neuromm.html" class="text-sm text-neutral-500 hover:text-ink transition-colors">← Neuromm</a>
+        <a href="./wineradar.html" class="text-sm font-medium hover:text-accent transition-colors">Wineradar →</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

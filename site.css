@@ -1,0 +1,119 @@
+html {
+  scroll-behavior: smooth;
+}
+
+.status-dot {
+  position: relative;
+}
+
+.status-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: status-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes status-ping {
+  75%, 100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: 0.42s cubic-bezier(0.22, 1, 0.36, 1) both vt-fade-slide-out;
+}
+
+::view-transition-new(root) {
+  animation: 0.42s cubic-bezier(0.22, 1, 0.36, 1) both vt-fade-slide-in;
+}
+
+html:active-view-transition-type(back) ::view-transition-old(root) {
+  animation-name: vt-fade-slide-out-back;
+}
+
+html:active-view-transition-type(back) ::view-transition-new(root) {
+  animation-name: vt-fade-slide-in-back;
+}
+
+@keyframes vt-fade-slide-out {
+  to {
+    opacity: 0;
+    transform: translateX(-1.75rem);
+  }
+}
+
+@keyframes vt-fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(1.75rem);
+  }
+}
+
+@keyframes vt-fade-slide-out-back {
+  to {
+    opacity: 0;
+    transform: translateX(1.75rem);
+  }
+}
+
+@keyframes vt-fade-slide-in-back {
+  from {
+    opacity: 0;
+    transform: translateX(-1.75rem);
+  }
+}
+
+.hero-btn-motion {
+  pointer-events: auto;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hero-btn-motion:focus {
+  outline: none;
+}
+
+.hero-btn-shadow {
+  opacity: 0;
+}
+
+.footer-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  color: #525252;
+  transition: color 0.15s ease;
+}
+
+.footer-social:hover {
+  color: #0a0a0a;
+}
+
+.footer-social:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.16);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dot::after {
+    animation: none;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+
+  .hero-btn-shadow {
+    opacity: 0.22;
+  }
+}

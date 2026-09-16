@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upwork — Dmitry Kiselev</title>
+  <meta name="description" content="Design system and core funnel UI at Upwork: Freelancer Profile, Search, Proposals, and AI Interviews. No product screenshots." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="./site.js"></script>
+  <link rel="stylesheet" href="./site.css" />
+</head>
+<body class="font-sans antialiased bg-white text-ink">
+  <main class="px-6 sm:px-10 lg:px-16 pt-14 pb-24 lg:pt-20">
+    <div class="max-w-[1100px] mx-auto">
+      <a href="./index.html" data-back class="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-ink transition-colors">
+        <span aria-hidden="true">←</span> Back
+      </a>
+
+      <p class="mt-10 text-xs uppercase tracking-[0.18em] text-neutral-400">Upwork · 2014 – 2026</p>
+      <h1 class="mt-4 text-4xl sm:text-6xl font-extrabold tracking-tight">
+        <span class="text-neutral-300">Core product UI,</span><br />
+        at marketplace scale.
+      </h1>
+      <p class="mt-6 text-lg text-neutral-500 max-w-2xl leading-relaxed">
+        Ten years on one of the world’s largest freelance marketplaces. Vue/Nuxt microfrontends for some of the most-visited pages — Freelancer Profile, Search, Proposals, AI Interviews — plus the shared component library, built with design.
+      </p>
+      <p class="mt-4 text-sm text-neutral-400 max-w-2xl">
+        Product screens cannot be shown here. The work is the process, the surfaces, and the quality bar.
+      </p>
+
+      <dl class="mt-10 grid sm:grid-cols-3 gap-6 text-sm">
+        <div>
+          <dt class="text-neutral-400">Role</dt>
+          <dd class="mt-1 font-medium">Senior Frontend Engineer</dd>
+        </div>
+        <div>
+          <dt class="text-neutral-400">Stack</dt>
+          <dd class="mt-1 font-medium">Vue · Nuxt · React · GraphQL</dd>
+        </div>
+        <div>
+          <dt class="text-neutral-400">Scale</dt>
+          <dd class="mt-1 font-medium">Tens of millions of visits / month</dd>
+        </div>
+      </dl>
+
+      <div class="mt-14 bg-ink text-white rounded-[28px] p-8 sm:p-12">
+        <p class="text-xs uppercase tracking-[0.18em] text-neutral-500">Surfaces</p>
+        <ul class="mt-6 grid sm:grid-cols-2 gap-x-10 gap-y-4 text-lg sm:text-xl font-semibold tracking-tight">
+          <li>Freelancer Profile</li>
+          <li>Freelancer Search</li>
+          <li>Proposals</li>
+          <li>AI Interviews</li>
+          <li>Design system</li>
+          <li>Frontend core → Vue</li>
+        </ul>
+      </div>
+
+      <div class="mt-16 space-y-16">
+        <article class="grid lg:grid-cols-[200px_minmax(0,1fr)] gap-6 lg:gap-12">
+          <h2 class="text-sm font-semibold uppercase tracking-[0.14em] text-neutral-400 pt-1">Design system</h2>
+          <div>
+            <p class="text-neutral-600 leading-relaxed">
+              Co-built Upwork’s shared UI component library. Day-to-day work with the design team: Figma to Storybook, implemented in Vue and React. The job was fidelity and reuse — components that product teams could trust on the highest-traffic pages, not a parallel visual language.
+            </p>
+          </div>
+        </article>
+
+        <article class="grid lg:grid-cols-[200px_minmax(0,1fr)] gap-6 lg:gap-12">
+          <h2 class="text-sm font-semibold uppercase tracking-[0.14em] text-neutral-400 pt-1">Proposal Manager</h2>
+          <div>
+            <p class="text-neutral-600 leading-relaxed">
+              Built the UI from scratch — a light CRM where clients review applicants, filter them, and send invites. The team model was one engineer per feature, so design conversations, implementation, tests (Cypress, Jest), and rollout sat with me. Shortlisting and inviting became noticeably faster.
+            </p>
+          </div>
+        </article>
+
+        <article class="grid lg:grid-cols-[200px_minmax(0,1fr)] gap-6 lg:gap-12">
+          <h2 class="text-sm font-semibold uppercase tracking-[0.14em] text-neutral-400 pt-1">AI Interviews</h2>
+          <div>
+            <p class="text-neutral-600 leading-relaxed">
+              Built the interview review page: a custom video player with YouTube-style controls and an AI-generated summary of each interview. Clients can screen from a recording instead of scheduling a live call. The player had to feel native to the product, not like a third-party widget dropped on the page.
+            </p>
+          </div>
+        </article>
+
+        <article class="grid lg:grid-cols-[200px_minmax(0,1fr)] gap-6 lg:gap-12">
+          <h2 class="text-sm font-semibold uppercase tracking-[0.14em] text-neutral-400 pt-1">How we worked</h2>
+          <div>
+            <p class="text-neutral-600 leading-relaxed">
+              Features from scoping to production, including the UX conversation before the PR. I reviewed what teammates shipped and caught UI inconsistencies at a glance. Earlier, on the Infrastructure team (2014–2018), I built PHP microfrontend infrastructure for upwork.com pages, then moved to the frontend track when the company standardized on Vue.
+            </p>
+          </div>
+        </article>
+      </div>
+
+      <div class="mt-20 flex items-center justify-between border-t border-neutral-200 pt-8">
+        <a href="./neuromm.html" class="text-sm text-neutral-500 hover:text-ink transition-colors">← Neuromm</a>
+        <a href="./onelineplayer.html" class="text-sm font-medium hover:text-accent transition-colors">OneLinePlayer →</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,143 @@
+/* CSS files add styling rules to your content */
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&family=Work+Sans:wght@400;500;600;800&display=swap');
+
+html, body {
+  font-family: helvetica, arial, sans-serif;
+  margin: 0;
+  padding: 0;
+/*   font-family: 'Work Sans', sans-serif; */
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+a {
+  color: #00f;
+}
+
+h1 {
+  font-size: 3em;
+  font-weight: 400;
+  color: #373fff;
+  margin: 0;
+}
+h2 {
+  margin-top: 10px;
+  color: #373fff;
+}
+h3 {
+  color: #00f;
+}
+header {
+  padding: 40px;
+  background: #fffeca;
+}
+
+section {
+  margin-right: 50px;
+  margin-bottom: 50px;
+}
+
+.content {
+  display: block;
+  padding: 0 40px 0 40px;
+}
+
+.container {
+  width: 500px;
+  margin: 0 auto;
+}
+
+@media only screen and (max-width: 777px) {
+  .container {
+    width: auto;
+  }
+}
+
+.skills {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.skills .skill {
+  margin-right: 20px;
+}
+.skills img {
+  width: 50px;
+  max-height: 40px;
+}
+
+
+.photo {
+  width: 150px;
+}
+
+.projects {
+  margin-top: 50px;
+}
+.projects img {
+  display: block;
+  width: 200px;
+}
+
+.timeline-item {
+  position: relative;
+  margin-left: 60px;
+  padding: 30px 30px 60px 30px;
+  border-left: 2px #00f solid;
+}
+.timeline-item p {
+  font-family: monospaced;
+  color: #222;
+  line-height: 26px;
+  font-weight: 300;
+  font-size: 0.9em;
+}
+
+.timeline-item img.company {
+  width: 150px;
+}
+
+.timeline-item .skills {
+  display: flex;
+  align-items: center;
+}
+.timeline-item .skills div {
+  margin-right: 20px;
+}
+.timeline-item .skills img {
+  width: 30px;
+  max-height: 20px;
+}
+.timeline-item .date {
+  width: 80px;
+  text-align: right;
+  color: #00f;
+  position: absolute;
+  top: 40px;
+  left: -76px;
+
+}
+.timeline-item .dot {
+  background: #00f;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  display: inline-block;
+  margin-left: 20px;
+  content: ""
+}
+
+.social {
+  display: flex;
+  align-items: center;
+}
+.social a {
+  display: block;
+}
+.social-icon {
+  width: 30px;
+
+}
+.angellist-icon {
+  height: 22px;
+}
