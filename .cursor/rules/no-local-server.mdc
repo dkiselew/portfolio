@@ -1,0 +1,17 @@
+---
+description: Do not start a local web server; one is already running via an editor plugin
+alwaysApply: true
+---
+
+# Do not start a local server
+
+A local web server is already running via an editor plugin. Never start another one.
+
+Do not run commands such as:
+
+- `python -m http.server`
+- `npx serve` / `npx http-server` / `npx live-server`
+- `vite` / `npm run dev` / `npm start` used only to preview static HTML
+- any other ad-hoc local file server
+
+For browser verification, use the already running plugin server. Do not spawn a new process to host the site.
