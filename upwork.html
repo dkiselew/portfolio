@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Upwork — Dmitry Kiselev</title>
-  <meta name="description" content="Design system and core funnel UI at Upwork: Freelancer Profile, Search, Proposals, and AI Interviews. No product screenshots." />
+  <meta name="description" content="Twelve years at Upwork: product UI and the APIs behind it — Profile, Search, Proposals, AI Interviews, and the design system." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,11 +23,11 @@
 
       <p class="mt-10 text-xs uppercase tracking-[0.18em] text-neutral-400">Upwork · 2014 – 2026</p>
       <h1 class="mt-4 text-4xl sm:text-6xl font-extrabold tracking-tight">
-        <span class="text-neutral-300">Core product UI,</span><br />
-        at marketplace scale.
+        <span class="text-neutral-300">Product pages,</span><br />
+        and the system under them.
       </h1>
       <p class="mt-6 text-lg text-neutral-500 max-w-2xl leading-relaxed">
-        Ten years on one of the world’s largest freelance marketplaces. Vue/Nuxt microfrontends for some of the most-visited pages — Freelancer Profile, Search, Proposals, AI Interviews — plus the shared component library, built with design.
+        Twelve years on one of the world’s largest freelance marketplaces. Two kinds of work: the product pages people use every day, and the infrastructure and UI components those pages are built from.
       </p>
       <p class="mt-4 text-sm text-neutral-400 max-w-2xl">
         Product screens cannot be shown here. The work is the process, the surfaces, and the quality bar.
@@ -36,11 +36,11 @@
       <dl class="mt-10 grid sm:grid-cols-3 gap-6 text-sm">
         <div>
           <dt class="text-neutral-400">Role</dt>
-          <dd class="mt-1 font-medium">Senior Frontend Engineer</dd>
+          <dd class="mt-1 font-medium">Senior Software Engineer</dd>
         </div>
         <div>
           <dt class="text-neutral-400">Stack</dt>
-          <dd class="mt-1 font-medium">Vue · Nuxt · React · GraphQL</dd>
+          <dd class="mt-1 font-medium">Vue · React · Node · GraphQL</dd>
         </div>
         <div>
           <dt class="text-neutral-400">Scale</dt>
@@ -48,54 +48,81 @@
         </div>
       </dl>
 
-      <div class="mt-14 bg-ink text-white rounded-[28px] p-8 sm:p-12">
-        <p class="text-xs uppercase tracking-[0.18em] text-neutral-500">Surfaces</p>
-        <ul class="mt-6 grid sm:grid-cols-2 gap-x-10 gap-y-4 text-lg sm:text-xl font-semibold tracking-tight">
-          <li>Freelancer Profile</li>
-          <li>Freelancer Search</li>
-          <li>Proposals</li>
-          <li>AI Interviews</li>
-          <li>Design system</li>
-          <li>Frontend core → Vue</li>
-        </ul>
-      </div>
+      <div class="mt-16">
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Product features and pages</h2>
+        <p class="mt-4 text-neutral-500 max-w-2xl leading-relaxed">
+          2018–2026, on the product team. Pages and features from planning with PMs and design through tests and gradual rollout.
+        </p>
 
-      <div class="mt-16 space-y-16">
-        <article class="grid lg:grid-cols-[200px_minmax(0,1fr)] gap-6 lg:gap-12">
-          <h2 class="text-sm font-semibold uppercase tracking-[0.14em] text-neutral-400 pt-1">Design system</h2>
-          <div>
+        <div class="mt-8 bg-ink text-white rounded-[28px] p-8 sm:p-12">
+          <p class="text-xs uppercase tracking-[0.18em] text-neutral-500">Pages</p>
+          <ul class="mt-6 grid sm:grid-cols-2 gap-x-10 gap-y-4 text-lg sm:text-xl font-semibold tracking-tight">
+            <li>Freelancer Profile</li>
+            <li>Freelancer Search</li>
+            <li>Proposals</li>
+            <li>AI Interviews</li>
+          </ul>
+        </div>
+
+        <div class="mt-12 space-y-12">
+          <article class="grid lg:grid-cols-[200px_minmax(0,1fr)] gap-6 lg:gap-12">
+            <h3 class="text-sm font-semibold uppercase tracking-[0.14em] text-neutral-400 pt-1">Proposal Manager</h3>
             <p class="text-neutral-600 leading-relaxed">
-              Co-built Upwork’s shared UI component library. Day-to-day work with the design team: Figma to Storybook, implemented in Vue and React. The job was fidelity and reuse — components that product teams could trust on the highest-traffic pages, not a parallel visual language.
+              Owned it as the one engineer on the feature — a light CRM where clients review applicants, filter them, and send invites. The UI was built from scratch; tests (Cypress, Jest) and rollout sat with me. Shortlisting and inviting became noticeably faster.
             </p>
-          </div>
-        </article>
+          </article>
 
-        <article class="grid lg:grid-cols-[200px_minmax(0,1fr)] gap-6 lg:gap-12">
-          <h2 class="text-sm font-semibold uppercase tracking-[0.14em] text-neutral-400 pt-1">Proposal Manager</h2>
-          <div>
-            <p class="text-neutral-600 leading-relaxed">
-              Built the UI from scratch — a light CRM where clients review applicants, filter them, and send invites. The team model was one engineer per feature, so design conversations, implementation, tests (Cypress, Jest), and rollout sat with me. Shortlisting and inviting became noticeably faster.
-            </p>
-          </div>
-        </article>
-
-        <article class="grid lg:grid-cols-[200px_minmax(0,1fr)] gap-6 lg:gap-12">
-          <h2 class="text-sm font-semibold uppercase tracking-[0.14em] text-neutral-400 pt-1">AI Interviews</h2>
-          <div>
+          <article class="grid lg:grid-cols-[200px_minmax(0,1fr)] gap-6 lg:gap-12">
+            <h3 class="text-sm font-semibold uppercase tracking-[0.14em] text-neutral-400 pt-1">AI Interviews</h3>
             <p class="text-neutral-600 leading-relaxed">
               Built the interview review page: a custom video player with YouTube-style controls and an AI-generated summary of each interview. Clients can screen from a recording instead of scheduling a live call. The player had to feel native to the product, not like a third-party widget dropped on the page.
             </p>
-          </div>
-        </article>
+          </article>
 
-        <article class="grid lg:grid-cols-[200px_minmax(0,1fr)] gap-6 lg:gap-12">
-          <h2 class="text-sm font-semibold uppercase tracking-[0.14em] text-neutral-400 pt-1">How we worked</h2>
-          <div>
+          <article class="grid lg:grid-cols-[200px_minmax(0,1fr)] gap-6 lg:gap-12">
+            <h3 class="text-sm font-semibold uppercase tracking-[0.14em] text-neutral-400 pt-1">How we worked</h3>
             <p class="text-neutral-600 leading-relaxed">
-              Features from scoping to production, including the UX conversation before the PR. I reviewed what teammates shipped and caught UI inconsistencies at a glance. Earlier, on the Infrastructure team (2014–2018), I built PHP microfrontend infrastructure for upwork.com pages, then moved to the frontend track when the company standardized on Vue.
+              Features from planning to release, with PMs, designers, and QA — design docs, tests, CI, and gradual rollouts. I asked for intent, then made the call in the UI, and caught product inconsistencies at a glance.
             </p>
-          </div>
-        </article>
+          </article>
+        </div>
+      </div>
+
+      <div class="mt-20 pt-16 border-t border-neutral-200">
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Infrastructure and UI components</h2>
+        <p class="mt-4 text-neutral-500 max-w-2xl leading-relaxed">
+          The layer under those pages: APIs, microfrontends, two core migrations, and the shared component library.
+        </p>
+
+        <div class="mt-8 bg-ink text-white rounded-[28px] p-8 sm:p-12">
+          <p class="text-xs uppercase tracking-[0.18em] text-neutral-500">Platform</p>
+          <ul class="mt-6 grid sm:grid-cols-2 gap-x-10 gap-y-4 text-lg sm:text-xl font-semibold tracking-tight">
+            <li>Microfrontends</li>
+            <li>Design system</li>
+            <li>Framework migration</li>
+          </ul>
+        </div>
+
+        <div class="mt-12 space-y-12">
+          <article class="grid lg:grid-cols-[200px_minmax(0,1fr)] gap-6 lg:gap-12">
+            <h3 class="text-sm font-semibold uppercase tracking-[0.14em] text-neutral-400 pt-1">The platform</h3>
+            <div class="space-y-4 text-neutral-600 leading-relaxed">
+              <p>
+                I started on Infrastructure (2014–2018), designing PHP BFF APIs and the microfrontend layer every upwork.com page sat on. Later I helped drive two company-wide migrations of the frontend core — first to Vue 3, later to React, Next.js, and GraphQL.
+              </p>
+              <p>
+                The job was evolving what already shipped, not throwing it away: a shared core, fewer one-off stacks, better developer experience. The next page didn’t start from scratch.
+              </p>
+            </div>
+          </article>
+
+          <article class="grid lg:grid-cols-[200px_minmax(0,1fr)] gap-6 lg:gap-12">
+            <h3 class="text-sm font-semibold uppercase tracking-[0.14em] text-neutral-400 pt-1">Design system</h3>
+            <p class="text-neutral-600 leading-relaxed">
+              Co-built Upwork’s shared UI component library. Day-to-day with design: Figma to Storybook, implemented in Vue and React. Components high-traffic teams could trust, not a parallel visual language.
+            </p>
+          </article>
+        </div>
       </div>
 
       <div class="mt-20 flex items-center justify-between border-t border-neutral-200 pt-8">
