@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chat Cost Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: short header, one flowchart (request path on top, rollout gates below), then the acceptance metrics. */
+:root {
+  --bg: #f5f7f6;
+  --surface: #ffffff;
+  --ink: #15201d;
+  --muted: #56645f;
+  --line: #c9d3cf;
+  --accent: #0d6b5e;
+  --accent-soft: #dcefeb;
+  --free: #1f7a43;
+  --trade: #a65e00;
+  --trade-soft: #fbecd5;
+  --stop: #b3261e;
+  --f-display: "Manrope", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Golos Text", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101614; --surface: #18201e; --ink: #e4ece9; --muted: #9aaaa4; --line: #34433e;
+    --accent: #4fc2ad; --accent-soft: #173832;
+    --free: #6fd093; --trade: #f0b25a; --trade-soft: #3a2a12; --stop: #f2897f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101614; --surface: #18201e; --ink: #e4ece9; --muted: #9aaaa4; --line: #34433e;
+  --accent: #4fc2ad; --accent-soft: #173832;
+  --free: #6fd093; --trade: #f0b25a; --trade-soft: #3a2a12; --stop: #f2897f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+.wrap {
+  max-width: 1200px; margin: 0 auto; padding-block: 36px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 28px;
+}
+h1, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.1; }
+h3 { font-size: 16px; }
+p { margin: 0; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.lede { color: var(--muted); max-width: 70ch; font-size: 16px; }
+
+figure { margin: 0; display: grid; gap: 10px; }
+.scroll { overflow-x: auto; }
+.d { display: block; width: 100%; min-width: 940px; height: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+figcaption { font-size: 13.5px; color: var(--muted); max-width: 90ch; }
+
+/* diagram marks */
+.d text { font-family: var(--f-body); font-size: 13px; fill: var(--ink); }
+.d .t { font-family: var(--f-display); font-weight: 700; font-size: 14px; }
+.d .h { font-family: var(--f-display); font-weight: 700; font-size: 16px; }
+.d .sub { font-size: 11.5px; fill: var(--muted); }
+.d .mono { font-family: var(--f-mono); font-size: 11px; fill: var(--muted); }
+.d .lbl { font-size: 11.5px; fill: var(--muted); }
+.d .inv { fill: var(--bg); }
+.d .box { fill: var(--surface); stroke: var(--line); stroke-width: 1.3; }
+.d .panel { fill: var(--bg); stroke: var(--line); stroke-width: 1.3; }
+.d .dark { fill: var(--ink); }
+.d .cache { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.2; }
+.d .fresh { fill: var(--trade-soft); stroke: var(--trade); stroke-width: 1.2; }
+.d .cheap { fill: var(--surface); stroke: var(--free); stroke-width: 1.8; }
+.d .main { fill: var(--surface); stroke: var(--accent); stroke-width: 1.8; }
+.d .edge { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+.d .bp { stroke: var(--accent); stroke-width: 1.3; stroke-dasharray: 4 3; }
+.d .bpt { font-family: var(--f-mono); font-size: 10.5px; fill: var(--accent); }
+.d .fail { fill: none; stroke: var(--stop); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.d .failt { font-size: 12px; fill: var(--stop); }
+.d .ah { fill: var(--muted); }
+.d .ahf { fill: var(--stop); }
+.d .rule { stroke: var(--line); stroke-width: 1; }
+.d .tagfree { font-family: var(--f-mono); font-size: 10.5px; fill: var(--free); }
+.d .tagtrade { font-family: var(--f-mono); font-size: 10.5px; fill: var(--trade); }
+
+.metrics { display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.card p { font-size: 13.5px; }
+.muted { color: var(--muted); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 6px 8px 6px 0; border-bottom: 1px solid var(--line); }
+th { font-family: var(--f-mono); font-size: 11px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+td.m { font-family: var(--f-mono); font-size: 12.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+tr:last-child td { border-bottom: none; }
+.formula { font-family: var(--f-mono); font-size: 13px; background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; line-height: 1.6; }
+footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
+@media (max-width: 760px) { .metrics { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<figure>
+  <div class="scroll">
+  <svg class="d" viewBox="0 0 1180 670" role="img" aria-label="Diagram: the customer message goes into prompt assembly, where tools, the system prompt and history are read from cache, and help-center articles and the new message are fresh input. The router sends simple turns to Haiku 5.5, regular turns to Sonnet 5.5 low and complex turns to Sonnet 5.5 medium. If Haiku is not confident, the turn goes to Sonnet. The answer goes to the customer and to the log; log metrics feed four checks: eval, shadow, canary, rollout, with automatic rollback on failure.">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+      <marker id="ahf" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ahf" d="M0 0L10 5L0 10z"/></marker>
+    </defs>
+
+    <!-- customer -->
+    <rect class="dark" x="20" y="200" width="130" height="64" rx="10"/>
+    <text class="t inv" x="85" y="228" text-anchor="middle">Customer</text>
+    <text class="t inv" x="85" y="246" text-anchor="middle">message</text>
+    <line class="edge" x1="150" y1="232" x2="188" y2="232" marker-end="url(#ah)"/>
+
+    <!-- prompt assembly -->
+    <rect class="panel" x="190" y="50" width="260" height="380" rx="12"/>
+    <text class="h" x="206" y="78">Prompt assembly</text>
+    <text class="sub" x="206" y="96">stable prefix → cache hit</text>
+
+    <rect class="cache" x="206" y="108" width="228" height="38" rx="6"/>
+    <text x="218" y="132">Tools · fixed order</text>
+    <rect class="cache" x="206" y="152" width="228" height="38" rx="6"/>
+    <text x="218" y="176">System prompt · no dates or IDs</text>
+
+    <line class="bp" x1="206" y1="200" x2="266" y2="200"/>
+    <text class="bpt" x="320" y="204" text-anchor="middle">cache breakpoint 1</text>
+    <line class="bp" x1="374" y1="200" x2="434" y2="200"/>
+
+    <rect class="cache" x="206" y="210" width="228" height="50" rx="6"/>
+    <text x="218" y="232">Conversation history</text>
+    <text class="sub" x="218" y="249">grows every turn</text>
+
+    <line class="bp" x1="206" y1="271" x2="266" y2="271"/>
+    <text class="bpt" x="320" y="275" text-anchor="middle">cache breakpoint 2</text>
+    <line class="bp" x1="374" y1="271" x2="434" y2="271"/>
+
+    <rect class="fresh" x="206" y="282" width="228" height="38" rx="6"/>
+    <text x="218" y="306">Help-center articles · top-3</text>
+    <rect class="fresh" x="206" y="326" width="228" height="38" rx="6"/>
+    <text x="218" y="350">Time, IDs, new message</text>
+
+    <rect class="cache" x="206" y="381" width="12" height="12" rx="2"/>
+    <text class="sub" x="226" y="392">cached · $0.10 / MTok</text>
+    <rect class="fresh" x="206" y="402" width="12" height="12" rx="2"/>
+    <text class="sub" x="226" y="413">fresh input · $2 / MTok</text>
+    <text class="tagfree" x="434" y="413" text-anchor="end">free</text>
+
+    <line class="edge" x1="450" y1="232" x2="478" y2="232" marker-end="url(#ah)"/>
+
+    <!-- router -->
+    <polygon class="box" points="550,180 620,232 550,284 480,232"/>
+    <text class="t" x="550" y="229" text-anchor="middle">Router</text>
+    <text class="sub" x="550" y="246" text-anchor="middle">intent + risk</text>
+    <text class="sub" x="550" y="306" text-anchor="middle">conversation stays</text>
+    <text class="sub" x="550" y="321" text-anchor="middle">on one model:</text>
+    <text class="sub" x="550" y="336" text-anchor="middle">caches are per model</text>
+    <text class="tagtrade" x="550" y="358" text-anchor="middle">tradeoff</text>
+
+    <!-- branch bus -->
+    <polyline class="edge" points="620,232 640,232"/>
+    <line class="edge" x1="640" y1="108" x2="640" y2="338"/>
+    <line class="edge" x1="640" y1="108" x2="718" y2="108" marker-end="url(#ah)"/>
+    <line class="edge" x1="640" y1="232" x2="718" y2="232" marker-end="url(#ah)"/>
+    <line class="edge" x1="640" y1="338" x2="718" y2="338" marker-end="url(#ah)"/>
+    <text class="lbl" x="678" y="101" text-anchor="middle">simple</text>
+    <text class="lbl" x="678" y="225" text-anchor="middle">regular</text>
+    <text class="lbl" x="678" y="331" text-anchor="middle">complex</text>
+
+    <!-- model lanes -->
+    <rect class="cheap" x="720" y="80" width="160" height="56" rx="8"/>
+    <text class="t" x="734" y="104">Haiku 5.5 · low</text>
+    <text class="mono" x="734" y="123">$0.10 / $0.50</text>
+
+    <rect class="main" x="720" y="204" width="160" height="56" rx="8"/>
+    <text class="t" x="734" y="228">Sonnet 5.5 · low</text>
+    <text class="mono" x="734" y="247">$2 / $10</text>
+
+    <rect class="main" x="720" y="310" width="160" height="56" rx="8"/>
+    <text class="t" x="734" y="334">Sonnet 5.5 · medium</text>
+    <text class="mono" x="734" y="353">$2 / $10, thinks longer</text>
+
+
+    <text class="sub" x="800" y="160" text-anchor="middle">how-to, where a setting is</text>
+    <text class="sub" x="800" y="384" text-anchor="middle">multi-step setup, errors</text>
+
+    <!-- confidence check -->
+    <line class="edge" x1="880" y1="108" x2="906" y2="108" marker-end="url(#ah)"/>
+    <polygon class="box" points="960,72 1012,108 960,144 908,108"/>
+    <text class="t" x="960" y="113" text-anchor="middle">Confident?</text>
+    <polyline class="edge" points="960,144 960,182 800,182 800,202" marker-end="url(#ah)"/>
+    <text class="lbl" x="880" y="176" text-anchor="middle">no → Sonnet</text>
+
+    <!-- to answer bus -->
+    <line class="edge" x1="1012" y1="108" x2="1040" y2="108"/>
+    <text class="lbl" x="1026" y="100" text-anchor="middle">yes</text>
+    <line class="edge" x1="880" y1="232" x2="1040" y2="232"/>
+    <line class="edge" x1="880" y1="338" x2="1040" y2="338"/>
+    <line class="edge" x1="1040" y1="108" x2="1040" y2="338"/>
+    <line class="edge" x1="1040" y1="232" x2="1058" y2="232" marker-end="url(#ah)"/>
+
+    <!-- answer + log -->
+    <rect class="dark" x="1060" y="200" width="110" height="64" rx="10"/>
+    <text class="t inv" x="1115" y="228" text-anchor="middle">Answer to</text>
+    <text class="t inv" x="1115" y="246" text-anchor="middle">customer</text>
+    <line class="edge" x1="1115" y1="264" x2="1115" y2="298" marker-end="url(#ah)"/>
+    <rect class="box" x="1060" y="300" width="110" height="64" rx="10"/>
+    <text class="t" x="1115" y="324" text-anchor="middle">Log</text>
+    <text class="sub" x="1115" y="341" text-anchor="middle">tokens, cache,</text>
+    <text class="sub" x="1115" y="356" text-anchor="middle">outcome</text>
+
+    <!-- divider -->
+    <line class="rule" x1="20" y1="476" x2="1160" y2="476"/>
+
+    <!-- log feeds gates -->
+    <line class="edge" x1="1115" y1="364" x2="1115" y2="538" marker-end="url(#ah)"/>
+    <text class="lbl" x="1105" y="462" text-anchor="end">metrics: resolved, CSAT, return within 7 days</text>
+
+    <!-- gates -->
+    <text class="h" x="20" y="506">Proving each change</text>
+    <text class="sub" x="20" y="524">one lever at a time; caching ships right away because answers don't change</text>
+
+    <rect class="box" x="20" y="540" width="220" height="72" rx="10"/>
+    <text class="t" x="36" y="565">1 · Offline eval</text>
+    <text class="sub" x="36" y="584">~2,000 real conversations</text>
+    <text class="sub" x="36" y="600">blind judge: Opus 5.5</text>
+
+    <rect class="box" x="320" y="540" width="220" height="72" rx="10"/>
+    <text class="t" x="336" y="565">2 · Shadow</text>
+    <text class="sub" x="336" y="584">runs on live traffic in parallel</text>
+    <text class="sub" x="336" y="600">customer sees the old answer</text>
+
+    <rect class="box" x="620" y="540" width="220" height="72" rx="10"/>
+    <text class="t" x="636" y="565">3 · Canary</text>
+    <text class="sub" x="636" y="584">5% → 25% of customers</text>
+    <text class="sub" x="636" y="600">A/B against a control group</text>
+
+    <rect class="box" x="920" y="540" width="240" height="72" rx="10"/>
+    <text class="t" x="936" y="565">4 · Rollout to 98%</text>
+    <text class="sub" x="936" y="584">2% stay on the old setup</text>
+    <text class="sub" x="936" y="600">watch for drift for a quarter</text>
+
+    <line class="edge" x1="240" y1="576" x2="318" y2="576" marker-end="url(#ah)"/>
+    <line class="edge" x1="540" y1="576" x2="618" y2="576" marker-end="url(#ah)"/>
+    <line class="edge" x1="840" y1="576" x2="918" y2="576" marker-end="url(#ah)"/>
+    <text class="lbl" x="279" y="568" text-anchor="middle">no worse</text>
+    <text class="lbl" x="579" y="568" text-anchor="middle">no worse</text>
+    <text class="lbl" x="879" y="568" text-anchor="middle">within limits</text>
+
+    <polyline class="fail" points="1000,612 1000,640 130,640 130,614" marker-end="url(#ahf)"/>
+    <text class="failt" x="565" y="660" text-anchor="middle">failure at any step → automatic rollback, the lever goes back to eval</text>
+  </svg>
+  </div>
+</figure>
+
+
+
+</div>
+</body>
+</html>

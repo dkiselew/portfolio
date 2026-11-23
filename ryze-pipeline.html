@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ryze Publishing Pipeline</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    pre code.hljs { background: transparent; padding: 0; }
+    .tab[aria-selected="true"] { background: #312e81; color: #fff; border-color: #312e81; }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased">
+<main class="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+
+  <!-- Header -->
+  <header class="mb-10">
+    <p class="font-mono text-xs uppercase tracking-widest text-indigo-700">System design · Temporal · TypeScript</p>
+    <h1 class="mt-2 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">200,000 articles a day, each published exactly once</h1>
+    <div class="mt-6 rounded-xl border border-stone-200 bg-white p-4">
+      <h2 class="text-base font-semibold text-stone-900">Article generation pipeline</h2>
+      <ol class="mt-3 flex flex-col gap-2 sm:flex-row sm:items-stretch">
+        <li class="flex-1 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2">
+          <p class="font-mono text-[11px] text-emerald-700">1 · LLM API</p>
+          <p class="text-sm font-semibold text-emerald-950">Article text</p>
+          <p class="mt-1 inline-block rounded bg-white px-1.5 text-[11px] text-stone-600 ring-1 ring-stone-200">paid</p>
+        </li>
+        <li aria-hidden="true" class="self-center text-stone-400"><span class="sm:hidden">↓</span><span class="hidden sm:inline">→</span></li>
+        <li class="flex-1 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2">
+          <p class="font-mono text-[11px] text-emerald-700">2 · Image API</p>
+          <p class="text-sm font-semibold text-emerald-950">Cover image</p>
+          <p class="mt-1 inline-block rounded bg-amber-50 px-1.5 text-[11px] text-amber-800 ring-1 ring-amber-200">slowest and most expensive</p>
+        </li>
+        <li aria-hidden="true" class="self-center text-stone-400"><span class="sm:hidden">↓</span><span class="hidden sm:inline">→</span></li>
+        <li class="flex flex-col items-center justify-center self-center rounded-lg border border-dashed border-stone-300 px-2 py-1 text-center">
+          <p class="text-sm" aria-hidden="true">⏱</p>
+          <p class="font-mono text-[11px] text-stone-600">wait for publishAt</p>
+        </li>
+        <li aria-hidden="true" class="self-center text-stone-400"><span class="sm:hidden">↓</span><span class="hidden sm:inline">→</span></li>
+        <li class="flex-1 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2">
+          <p class="font-mono text-[11px] text-emerald-700">3 · customer site</p>
+          <p class="text-sm font-semibold text-emerald-950">Upload image</p>
+          <p class="mt-1 inline-block rounded bg-white px-1.5 text-[11px] text-stone-600 ring-1 ring-stone-200">platform rate limits</p>
+        </li>
+        <li aria-hidden="true" class="self-center text-stone-400"><span class="sm:hidden">↓</span><span class="hidden sm:inline">→</span></li>
+        <li class="flex-1 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2">
+          <p class="font-mono text-[11px] text-emerald-700">4 · customer site</p>
+          <p class="text-sm font-semibold text-emerald-950">Publish with cover</p>
+          <p class="mt-1 inline-block rounded bg-white px-1.5 text-[11px] text-stone-600 ring-1 ring-stone-200">exactly once</p>
+        </li>
+      </ol>
+    </div>
+    <p class="mt-4 max-w-3xl text-stone-600">
+      Each article is its own Temporal workflow with <code class="rounded bg-stone-200 px-1 font-mono text-sm">workflowId = article-{id}</code>.
+      Each step is an activity on its own task queue with its own limits. Temporal keeps the progress, and the activities
+      are written so that retrying a step costs nothing extra and never creates a duplicate.
+    </p>
+  </header>
+
+  <!-- Diagram -->
+  <section class="mb-14">
+    <h2 class="text-xl font-semibold text-stone-900">Service diagram</h2>
+    <div class="mt-4 overflow-x-auto rounded-xl border border-stone-200 bg-white p-4">
+      <svg viewBox="0 0 1000 720" class="min-w-[760px] w-full" font-family="ui-sans-serif, system-ui, sans-serif" role="img" aria-label="Publishing pipeline diagram">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10" fill="none" stroke="#78716c" stroke-width="1.6"/>
+          </marker>
+        </defs>
+
+        <!-- Row 1: intake -->
+        <rect x="20" y="20" width="170" height="76" rx="10" fill="#f5f5f4" stroke="#a8a29e"/>
+        <text x="105" y="50" text-anchor="middle" font-size="15" font-weight="600" fill="#292524">Ryze product</text>
+        <text x="105" y="74" text-anchor="middle" font-size="12" fill="#57534e">article is ready</text>
+
+        <rect x="222" y="20" width="258" height="76" rx="10" fill="#eef2ff" stroke="#818cf8"/>
+        <text x="351" y="50" text-anchor="middle" font-size="15" font-weight="600" fill="#312e81">Intake API · acceptArticle</text>
+        <text x="351" y="74" text-anchor="middle" font-size="12" fill="#4338ca">insertArticle → workflow.start</text>
+
+        <rect x="520" y="20" width="460" height="76" rx="10" fill="#eef2ff" stroke="#818cf8"/>
+        <text x="750" y="48" text-anchor="middle" font-size="16" font-weight="600" fill="#312e81">Temporal cluster · task queue "article"</text>
+        <text x="750" y="72" text-anchor="middle" font-size="12.5" fill="#4338ca" font-family="ui-monospace, monospace">publishArticle · article-{id} · waits for publishAt</text>
+
+        <line x1="190" y1="58" x2="218" y2="58" stroke="#78716c" stroke-width="1.6" marker-end="url(#ar)"/>
+        <line x1="480" y1="58" x2="516" y2="58" stroke="#78716c" stroke-width="1.6" marker-end="url(#ar)"/>
+
+        <!-- Postgres -->
+        <line x1="351" y1="96" x2="351" y2="118" stroke="#78716c" stroke-width="1.6" marker-end="url(#ar)"/>
+        <rect x="20" y="122" width="460" height="96" rx="10" fill="#fffbeb" stroke="#f59e0b"/>
+        <text x="250" y="146" text-anchor="middle" font-size="15.5" font-weight="600" fill="#78350f">Postgres</text>
+        <text x="250" y="167" text-anchor="middle" font-size="12" fill="#92400e">articles: status, image_job_id, media_id, post_url</text>
+        <text x="250" y="186" text-anchor="middle" font-size="12" fill="#92400e">customers: one site, platform, credentials</text>
+        <text x="250" y="205" text-anchor="middle" font-size="12" fill="#92400e">customer_limits: token bucket per customer</text>
+
+        <line x1="750" y1="96" x2="750" y2="244" stroke="#78716c" stroke-width="1.6" marker-end="url(#ar)"/>
+        <text x="760" y="176" font-size="12" fill="#57534e">tasks by queue</text>
+
+        <g transform="translate(0,110)">
+          <!-- Workers group -->
+          <rect x="20" y="138" width="960" height="166" rx="14" fill="none" stroke="#a8a29e" stroke-dasharray="6 5"/>
+          <text x="40" y="164" font-size="13.5" fill="#44403c">Workers (k8s, autoscaled on queue backlog): a separate task queue and limits for each step</text>
+          <!-- workers ↔ Postgres -->
+          <line x1="250" y1="138" x2="250" y2="112" stroke="#78716c" stroke-width="1.6" marker-end="url(#ar)"/>
+
+          <rect x="36" y="178" width="220" height="110" rx="10" fill="#ecfdf5" stroke="#34d399"/>
+          <text x="146" y="206" text-anchor="middle" font-size="15.5" font-weight="600" fill="#064e3b">1 · LLM text</text>
+          <text x="146" y="230" text-anchor="middle" font-size="12" fill="#047857" font-family="ui-monospace, monospace">llm</text>
+          <text x="146" y="252" text-anchor="middle" font-size="12" fill="#065f46">rate set by provider quota</text>
+          <text x="146" y="272" text-anchor="middle" font-size="12" fill="#065f46">already in S3 → no charge</text>
+
+          <rect x="272" y="178" width="220" height="110" rx="10" fill="#ecfdf5" stroke="#34d399"/>
+          <text x="382" y="206" text-anchor="middle" font-size="15.5" font-weight="600" fill="#064e3b">2 · Cover</text>
+          <text x="382" y="230" text-anchor="middle" font-size="12" fill="#047857" font-family="ui-monospace, monospace">image</text>
+          <text x="382" y="252" text-anchor="middle" font-size="12" fill="#065f46">most expensive, heartbeat</text>
+          <text x="382" y="272" text-anchor="middle" font-size="12" fill="#065f46">jobId in DB → resume</text>
+
+          <rect x="508" y="178" width="220" height="110" rx="10" fill="#ecfdf5" stroke="#34d399"/>
+          <text x="618" y="206" text-anchor="middle" font-size="15.5" font-weight="600" fill="#064e3b">3 · Upload</text>
+          <text x="618" y="230" text-anchor="middle" font-size="12" fill="#047857" font-family="ui-monospace, monospace">publish-{platform}</text>
+          <text x="618" y="252" text-anchor="middle" font-size="12" fill="#065f46">token bucket per customer</text>
+          <text x="618" y="272" text-anchor="middle" font-size="12" fill="#065f46">find-or-upload by articleId</text>
+
+          <rect x="744" y="178" width="220" height="110" rx="10" fill="#ecfdf5" stroke="#34d399"/>
+          <text x="854" y="206" text-anchor="middle" font-size="15.5" font-weight="600" fill="#064e3b">4 · Publish</text>
+          <text x="854" y="230" text-anchor="middle" font-size="12" fill="#047857" font-family="ui-monospace, monospace">publish-{platform}</text>
+          <text x="854" y="252" text-anchor="middle" font-size="12" fill="#065f46">idempotent</text>
+          <text x="854" y="272" text-anchor="middle" font-size="12" fill="#065f46">find-or-create by articleId</text>
+
+          <!-- Externals -->
+          <line x1="146" y1="288" x2="146" y2="356" stroke="#78716c" stroke-width="1.6" marker-end="url(#ar)"/>
+          <line x1="382" y1="288" x2="382" y2="356" stroke="#78716c" stroke-width="1.6" marker-end="url(#ar)"/>
+          <line x1="618" y1="288" x2="618" y2="356" stroke="#78716c" stroke-width="1.6" marker-end="url(#ar)"/>
+          <line x1="854" y1="288" x2="854" y2="356" stroke="#78716c" stroke-width="1.6" marker-end="url(#ar)"/>
+
+          <rect x="36" y="360" width="220" height="72" rx="10" fill="#f5f5f4" stroke="#a8a29e"/>
+          <text x="146" y="390" text-anchor="middle" font-size="15.5" font-weight="600" fill="#292524">LLM API</text>
+          <text x="146" y="413" text-anchor="middle" font-size="12.5" fill="#57534e">text</text>
+
+          <rect x="272" y="360" width="220" height="72" rx="10" fill="#f5f5f4" stroke="#a8a29e"/>
+          <text x="382" y="390" text-anchor="middle" font-size="15.5" font-weight="600" fill="#292524">Image API</text>
+          <text x="382" y="413" text-anchor="middle" font-size="12.5" fill="#57534e">async job → image</text>
+
+          <rect x="508" y="360" width="456" height="72" rx="10" fill="#f5f5f4" stroke="#a8a29e"/>
+          <text x="736" y="390" text-anchor="middle" font-size="15.5" font-weight="600" fill="#292524">Customer platforms (adapters)</text>
+          <text x="736" y="413" text-anchor="middle" font-size="12.5" fill="#57534e">Shopify · WordPress · Webflow · Wix · …</text>
+
+          <!-- S3 -->
+          <path d="M20 221 H8 V530 H32" fill="none" stroke="#78716c" stroke-width="1.6" marker-end="url(#ar)"/>
+          <text x="40" y="474" font-size="12.5" fill="#57534e">every activity: check what is already done → paid call → save the result right away</text>
+
+          <rect x="36" y="490" width="928" height="80" rx="10" fill="#fffbeb" stroke="#f59e0b"/>
+          <text x="500" y="518" text-anchor="middle" font-size="15.5" font-weight="600" fill="#78350f">S3 / MinIO · paid-for artifacts</text>
+          <text x="500" y="546" text-anchor="middle" font-size="12" fill="#92400e" font-family="ui-monospace, monospace">articles/{id}/text.json · articles/{id}/cover.webp — keyed by articleId, Temporal only sees the id</text>
+        </g>
+      </svg>
+    </div>
+    <p class="mt-3 text-sm text-stone-500">
+      Workflow workers (queue <span class="font-mono">article</span>) only orchestrate and never call external services.
+      All heavy work and external I/O runs in activity workers, and each pool scales on its own.
+    </p>
+  </section>
+
+  <!-- Stack -->
+  <section class="mb-14">
+    <h2 class="text-xl font-semibold text-stone-900">Stack</h2>
+    <div class="mt-4 overflow-x-auto rounded-xl border border-stone-200 bg-white">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-stone-100 text-stone-600">
+          <tr><th class="px-4 py-2 font-medium">Component</th><th class="px-4 py-2 font-medium">Why</th></tr>
+        </thead>
+        <tbody class="divide-y divide-stone-100">
+          <tr><td class="px-4 py-2 font-medium">Temporal</td><td class="px-4 py-2">Durable execution: workflow history, retries with backoff, timeouts, heartbeats, task queue rate limits, a UI for debugging failed articles</td></tr>
+          <tr><td class="px-4 py-2 font-medium">Node.js + <span class="font-mono">@temporalio/*</span> (TypeScript)</td><td class="px-4 py-2">Workflow and activity workers. Every step is I/O-bound, so one pod handles hundreds of concurrent activities</td></tr>
+          <tr><td class="px-4 py-2 font-medium">Kubernetes + KEDA</td><td class="px-4 py-2">A separate deployment per queue, autoscaled on task queue backlog (a Temporal metric)</td></tr>
+          <tr><td class="px-4 py-2 font-medium">Postgres</td><td class="px-4 py-2">Articles: the Intake API creates the row, and workers update the status and platform-side state (image_job_id, media_id, post_url). Customers: their single site, platform and credentials. Also the per-customer token bucket: the task queue limit is shared across a platform, while each customer site has its own limit. At ~10 requests/s to platforms this is one <span class="font-mono">UPDATE</span> on the customer row, so no separate Redis is needed</td></tr>
+          <tr><td class="px-4 py-2 font-medium">S3 / MinIO</td><td class="px-4 py-2">Paid-for artifacts: text and images. The key is derived from article_id</td></tr>
+          <tr><td class="px-4 py-2 font-medium">Prometheus + Grafana, OpenTelemetry</td><td class="px-4 py-2">Temporal SDK metrics (schedule-to-start latency, backlog), cost per step, 429 rate per platform</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Code -->
+  <section class="mb-14">
+    <h2 class="text-xl font-semibold text-stone-900">Worker code (TypeScript)</h2>
+    <p class="mt-2 text-sm text-stone-600">One file per deployment. <span class="font-mono">db</span>, <span class="font-mono">s3</span>, <span class="font-mono">llm</span>, <span class="font-mono">imageApi</span> and <span class="font-mono">adapters</span> are thin clients and are omitted. Everything else is the real Temporal TS SDK API.</p>
+    <div class="mt-4 flex flex-wrap gap-2" role="tablist" id="tabs"></div>
+    <div class="mt-3 overflow-hidden rounded-xl border border-stone-200 bg-white">
+      <div class="flex items-center justify-between border-b border-stone-200 bg-stone-100 px-4 py-2">
+        <span id="fname" class="font-mono text-xs text-stone-600"></span>
+        <button id="copy" class="rounded border border-stone-300 bg-white px-2 py-0.5 text-xs text-stone-600 hover:bg-stone-50">Copy</button>
+      </div>
+      <pre class="overflow-x-auto p-4 text-[13px] leading-relaxed"><code id="code" class="language-typescript"></code></pre>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===================== Code sources (raw text, no escaping needed) ===================== -->
+<script type="text/plain" data-file="intake-api.ts">
+import { Client, Connection, WorkflowExecutionAlreadyStartedError } from "@temporalio/client";
+
+const temporal = new Client({
+  connection: await Connection.connect({ address: process.env.TEMPORAL_ADDRESS }),
+});
+
+// HTTP handler. The product calls it when an article is ready to publish.
+export async function acceptArticle(input: {
+  articleId: string;
+  customerId: string;
+  platform: "wordpress" | "shopify" | "webflow" | "wix";
+  brief: string;
+  publishAt?: string; // ISO; if missing, publish right after generation
+}) {
+  const publishAt = input.publishAt ?? new Date().toISOString();
+
+  await db.insertArticle({ ...input, publishAt }); // ON CONFLICT DO NOTHING
+
+  // A fixed workflowId protects against duplicates on a repeated POST.
+  // Crashed between insert and start → the product repeats the POST; both operations are idempotent.
+  try {
+    await temporal.workflow.start("publishArticle", {
+      workflowId: `article-${input.articleId}`,
+      taskQueue: "article",
+      args: [input.articleId, input.platform, publishAt],
+      workflowIdConflictPolicy: "USE_EXISTING",
+      workflowIdReusePolicy: "ALLOW_DUPLICATE_FAILED_ONLY", // a failed one can be restarted, a published one cannot
+    });
+  } catch (e) {
+    if (!(e instanceof WorkflowExecutionAlreadyStartedError)) throw e;
+  }
+}
+
+export async function cancelArticle(articleId: string) {
+  await temporal.workflow.getHandle(`article-${articleId}`).cancel();
+}
+</script>
+
+<script type="text/plain" data-file="workflow.ts">
+import { proxyActivities, sleep } from "@temporalio/workflow";
+import type * as llm from "./worker-llm";
+import type * as image from "./worker-image";
+import type * as publish from "./worker-publish";
+
+const retry = {
+  maximumInterval: "10m",
+  nonRetryableErrorTypes: ["BadRequest", "AuthRevoked"],
+};
+
+const { generateText } = proxyActivities<typeof llm>({
+  taskQueue: "llm",
+  startToCloseTimeout: "3m",
+  retry,
+});
+
+const { generateCover } = proxyActivities<typeof image>({
+  taskQueue: "image",
+  startToCloseTimeout: "15m",
+  heartbeatTimeout: "30s",
+  retry,
+});
+
+// Temporal records the result of every step: after a restart we resume where we left off.
+export async function publishArticle(articleId: string, platform: string, publishAt: string) {
+  const { uploadCover, publishPost } = proxyActivities<typeof publish>({
+    taskQueue: `publish-${platform}`,
+    startToCloseTimeout: "2m",
+    retry,
+  });
+
+  await generateText(articleId);
+  await generateCover(articleId); // expensive step goes after the text, so we do not pay if the text is rejected
+
+  // Generate ahead of time, publish on schedule. The timer is stored in Temporal.
+  const delay = Date.parse(publishAt) - Date.now();
+  if (delay > 0) await sleep(delay);
+
+  const mediaId = await uploadCover(articleId);
+  return publishPost(articleId, mediaId);
+}
+</script>
+
+<script type="text/plain" data-file="temporal.ts">
+import { NativeConnection, Worker, WorkerOptions } from "@temporalio/worker";
+import { ApplicationFailure } from "@temporalio/activity";
+
+export async function runWorker(options: Omit<WorkerOptions, "connection">) {
+  const connection = await NativeConnection.connect({ address: process.env.TEMPORAL_ADDRESS });
+  const worker = await Worker.create({ connection, ...options });
+  await worker.run();
+}
+
+// Provider HTTP errors → retry decisions. 5xx and network errors are retried as usual.
+export function toTemporalError(e: any): never {
+  if (e.status === 429) {
+    throw ApplicationFailure.create({ message: e.message, nextRetryDelay: e.retryAfterMs ?? "30s" });
+  }
+  if (e.status === 401 || e.status === 403) {
+    throw ApplicationFailure.nonRetryable(e.message, "AuthRevoked");
+  }
+  if (e.status >= 400 && e.status < 500 && e.status !== 408) {
+    throw ApplicationFailure.nonRetryable(e.message, "BadRequest");
+  }
+  throw e;
+}
+</script>
+
+<script type="text/plain" data-file="worker-article.ts">
+import { runWorker } from "./temporal";
+
+await runWorker({
+  taskQueue: "article",
+  workflowsPath: require.resolve("./workflow"),
+});
+</script>
+
+<script type="text/plain" data-file="worker-llm.ts">
+import { runWorker, toTemporalError } from "./temporal";
+
+export async function generateText(articleId: string) {
+  const key = `articles/${articleId}/text.json`;
+  if (await s3.exists(key)) return; // already paid for in a previous attempt
+
+  const { brief } = await db.getArticle(articleId);
+  const text = await llm.generate(brief).catch(toTemporalError);
+  await s3.put(key, JSON.stringify(text));
+}
+
+await runWorker({
+  taskQueue: "llm",
+  activities: { generateText },
+  maxConcurrentActivityTaskExecutions: 200,
+  maxTaskQueueActivitiesPerSecond: 15, // provider quota for the whole queue
+});
+</script>
+
+<script type="text/plain" data-file="worker-image.ts">
+import { heartbeat, sleep } from "@temporalio/activity";
+import { runWorker, toTemporalError } from "./temporal";
+
+export async function generateCover(articleId: string) {
+  const key = `articles/${articleId}/cover.webp`;
+  if (await s3.exists(key)) return;
+
+  // Save jobId before waiting: after a crash we wait for the same job instead of buying a new one.
+  let jobId = await db.getImageJobId(articleId);
+  if (!jobId) {
+    const { title } = JSON.parse(await s3.get(`articles/${articleId}/text.json`));
+    jobId = await imageApi.createJob(coverPrompt(title)).catch(toTemporalError);
+    await db.saveImageJobId(articleId, jobId);
+  }
+
+  for (;;) {
+    const job = await imageApi.getJob(jobId).catch(toTemporalError);
+    if (job.status === "done") return s3.put(key, job.image);
+    if (job.status === "failed") {
+      await db.saveImageJobId(articleId, null); // the next attempt will create a new job
+      throw new Error(`image job ${jobId} failed`);
+    }
+    heartbeat();
+    await sleep(5_000);
+  }
+}
+
+await runWorker({
+  taskQueue: "image",
+  activities: { generateCover },
+  maxConcurrentActivityTaskExecutions: 150,
+  maxTaskQueueActivitiesPerSecond: 8,
+});
+</script>
+
+<script type="text/plain" data-file="worker-publish.ts">
+import { ApplicationFailure } from "@temporalio/activity";
+import { runWorker, toTemporalError } from "./temporal";
+
+// One deployment per platform: PLATFORM=shopify listens on the publish-shopify queue.
+const platform = process.env.PLATFORM!;
+const adapter = adapters[platform];
+
+// The adapter tags objects with our articleId (file name, metafield, custom field)
+// and can look them up by it. A retry after a lost response does not create a duplicate.
+
+export async function uploadCover(articleId: string): Promise<string> {
+  const saved = await db.getMediaId(articleId);
+  if (saved) return saved;
+
+  await takeSiteToken(articleId);
+  const site = await db.getSite(articleId);
+  const mediaId =
+    (await adapter.findMedia(site, articleId)) ??
+    (await adapter.uploadMedia(site, articleId, await s3.get(`articles/${articleId}/cover.webp`))
+      .catch(toTemporalError));
+
+  await db.saveMediaId(articleId, mediaId);
+  return mediaId;
+}
+
+export async function publishPost(articleId: string, mediaId: string): Promise<string> {
+  const saved = await db.getPostUrl(articleId);
+  if (saved) return saved;
+
+  await takeSiteToken(articleId);
+  const site = await db.getSite(articleId);
+  const text = JSON.parse(await s3.get(`articles/${articleId}/text.json`));
+  const post =
+    (await adapter.findPost(site, articleId)) ??
+    (await adapter.createPost(site, articleId, { ...text, mediaId }).catch(toTemporalError));
+
+  await db.markPublished(articleId, post.url);
+  return post.url;
+}
+
+// Customer site rate limit (token bucket in customer_limits). No token → retry later.
+async function takeSiteToken(articleId: string) {
+  const waitMs = await db.tryTakeSiteToken(articleId);
+  if (waitMs > 0) throw ApplicationFailure.create({ message: "site rate limit", nextRetryDelay: waitMs });
+}
+
+await runWorker({
+  taskQueue: `publish-${platform}`,
+  activities: { uploadCover, publishPost },
+  maxConcurrentActivityTaskExecutions: 100,
+  maxTaskQueueActivitiesPerSecond: Number(process.env.PLATFORM_RPS), // overall platform API limit
+});
+</script>
+
+<script type="text/plain" data-file="schema.sql">
+-- Postgres: customers, articles and limits. Each customer has exactly one site.
+
+CREATE TABLE customers (
+  id              uuid PRIMARY KEY,
+  platform        text NOT NULL,          -- wordpress | shopify | webflow | wix
+  site_url        text NOT NULL,
+  credentials_ref text NOT NULL           -- reference to a secret in Vault/KMS
+);
+
+CREATE TABLE articles (
+  id           uuid PRIMARY KEY,          -- = articleId, also used for workflowId
+  customer_id  uuid NOT NULL REFERENCES customers(id),
+  platform     text NOT NULL,
+  brief        text NOT NULL,
+  publish_at   timestamptz NOT NULL DEFAULT now(), -- when to go live on the customer site
+  status       text NOT NULL DEFAULT 'accepted', -- accepted → live
+  image_job_id text,                      -- Image API job: after a crash we wait for it instead of buying a new one
+  media_id     text,                      -- image on the customer platform
+  post_url     text,                      -- published article
+  updated_at   timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE customer_limits (
+  customer_id uuid PRIMARY KEY REFERENCES customers(id),
+  capacity    real NOT NULL,              -- burst size
+  rate        real NOT NULL,              -- requests per second to the customer site
+  tokens      real NOT NULL,
+  updated_at  timestamptz NOT NULL DEFAULT now()
+);
+
+</script>
+
+<script>
+  const files = [...document.querySelectorAll('script[data-file]')].map((s) => ({
+    name: s.dataset.file,
+    src: s.textContent.replace(/^\n/, '').replace(/\s+$/, '') + '\n',
+  }));
+  const tabs = document.getElementById('tabs');
+  const code = document.getElementById('code');
+  const fname = document.getElementById('fname');
+  let current = 0;
+
+  function show(i) {
+    current = i;
+    [...tabs.children].forEach((b, j) => b.setAttribute('aria-selected', String(i === j)));
+    fname.textContent = files[i].name;
+    code.textContent = files[i].src;
+    code.removeAttribute('data-highlighted');
+    code.className = files[i].name.endsWith('.sql') ? 'language-sql' : 'language-typescript';
+    if (window.hljs) hljs.highlightElement(code);
+  }
+
+  files.forEach((f, i) => {
+    const b = document.createElement('button');
+    b.className = 'tab rounded-md border border-stone-300 bg-white px-3 py-1 font-mono text-xs text-stone-700 hover:border-indigo-400';
+    b.setAttribute('role', 'tab');
+    b.textContent = f.name;
+    b.onclick = () => show(i);
+    tabs.appendChild(b);
+  });
+
+  document.getElementById('copy').onclick = async (e) => {
+    try { await navigator.clipboard.writeText(files[current].src); e.target.textContent = 'Copied'; }
+    catch { e.target.textContent = 'Copy failed'; }
+    setTimeout(() => (e.target.textContent = 'Copy'), 1500);
+  };
+
+  show(0);
+</script>
+</body>
+</html>
